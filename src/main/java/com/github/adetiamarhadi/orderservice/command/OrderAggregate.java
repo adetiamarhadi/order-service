@@ -1,6 +1,7 @@
 package com.github.adetiamarhadi.orderservice.command;
 
 import com.github.adetiamarhadi.orderservice.core.events.OrderCreatedEvent;
+import com.github.adetiamarhadi.orderservice.core.model.OrderStatus;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;

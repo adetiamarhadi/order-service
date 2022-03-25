@@ -1,9 +1,13 @@
 package com.github.adetiamarhadi.orderservice.core.events;
 
-import com.github.adetiamarhadi.orderservice.command.OrderStatus;
+import com.github.adetiamarhadi.orderservice.core.model.OrderStatus;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderCreatedEvent {
 
 	private String orderId;

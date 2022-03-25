@@ -1,4 +1,4 @@
-package com.github.adetiamarhadi.orderservice.command;
+package com.github.adetiamarhadi.orderservice.core.model;
 
 public enum OrderStatus {
 	CREATED, APPROVED, REJECTED

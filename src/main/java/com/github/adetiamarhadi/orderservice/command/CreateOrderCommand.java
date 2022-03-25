@@ -1,5 +1,6 @@
 package com.github.adetiamarhadi.orderservice.command;
 
+import com.github.adetiamarhadi.orderservice.core.model.OrderStatus;
 import lombok.Builder;
 import lombok.Data;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
@@ -9,7 +10,8 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 public class CreateOrderCommand {
 
 	@TargetAggregateIdentifier
-	private final String orderId;
+	public final String orderId;
+
 	private final String userId;
 	private final String productId;
 	private final int quantity;

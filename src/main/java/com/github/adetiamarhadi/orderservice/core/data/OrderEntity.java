@@ -1,6 +1,6 @@
 package com.github.adetiamarhadi.orderservice.core.data;
 
-import com.github.adetiamarhadi.orderservice.command.OrderStatus;
+import com.github.adetiamarhadi.orderservice.core.model.OrderStatus;
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -17,7 +17,7 @@ public class OrderEntity {
 
 	@Id
 	@Column(unique = true)
-	private String orderId;
+	public String orderId;
 
 	private String productId;
 	private String userId;

@@ -1,13 +1,14 @@
 package com.github.adetiamarhadi.orderservice.command.rest;
 
 import com.github.adetiamarhadi.orderservice.command.CreateOrderCommand;
-import com.github.adetiamarhadi.orderservice.command.OrderStatus;
+import com.github.adetiamarhadi.orderservice.core.model.OrderStatus;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.UUID;
 
 @RestController
@@ -21,7 +22,7 @@ public class OrderCommandController {
 	}
 
 	@PostMapping
-	public String createOrder(@RequestBody CreateOrderRestModel createOrderRestModel) {
+	public String createOrder(@Valid @RequestBody CreateOrderRestModel createOrderRestModel) {
 
 		CreateOrderCommand createOrderCommand = CreateOrderCommand.builder()
 				.orderId(UUID.randomUUID().toString())
