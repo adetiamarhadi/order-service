@@ -1,7 +1,6 @@
 package com.github.adetiamarhadi.orderservice.command;
 
 import com.github.adetiamarhadi.orderservice.core.events.OrderCreatedEvent;
-import com.github.adetiamarhadi.orderservice.core.model.OrderStatus;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -18,7 +17,6 @@ public class OrderAggregate {
 	private String userId;
 	private int quantity;
 	private String addressId;
-	private OrderStatus orderStatus;
 
 	public OrderAggregate() {}
 
@@ -39,6 +37,5 @@ public class OrderAggregate {
 		this.userId = orderCreatedEvent.getUserId();
 		this.quantity = orderCreatedEvent.getQuantity();
 		this.addressId = orderCreatedEvent.getAddressId();
-		this.orderStatus = orderCreatedEvent.getOrderStatus();
 	}
 }

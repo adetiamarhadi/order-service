@@ -18,6 +18,7 @@
 		<spring-cloud.version>2021.0.1</spring-cloud.version>
 		<axon.version>4.5.8</axon.version>
 		<guava.version>31.0.1-jre</guava.version>
+		<saga-core.version>0.0.3-SNAPSHOT</saga-core.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -45,6 +46,11 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>${guava.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.adetiamarhadi</groupId>
+			<artifactId>saga-core</artifactId>
+			<version>${saga-core.version}</version>
 		</dependency>
 
 		<dependency>
