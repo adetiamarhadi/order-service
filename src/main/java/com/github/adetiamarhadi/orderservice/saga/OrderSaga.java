@@ -1,7 +1,9 @@
 package com.github.adetiamarhadi.orderservice.saga;
 
 import com.github.adetiamarhadi.orderservice.core.events.OrderCreatedEvent;
+import com.github.adetiamarhadi.sagacore.commands.ProcessPaymentCommand;
 import com.github.adetiamarhadi.sagacore.commands.ReserveProductCommand;
+import com.github.adetiamarhadi.sagacore.events.PaymentProcessedEvent;
 import com.github.adetiamarhadi.sagacore.events.ProductReservedEvent;
 import com.github.adetiamarhadi.sagacore.model.User;
 import com.github.adetiamarhadi.sagacore.query.FetchUserPaymentDetailsQuery;
@@ -14,6 +16,9 @@ import org.axonframework.spring.stereotype.Saga;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Saga
 public class OrderSaga {
@@ -76,5 +81,26 @@ public class OrderSaga {
 		}
 
 		LOGGER.info("successfully fetched user payment details for user " + user.getFirstName());
+
+		ProcessPaymentCommand processPaymentCommand = ProcessPaymentCommand.builder()
+				.orderId(productReservedEvent.getOrderId())
+				.paymentDetails(user.getPaymentDetails())
+				.paymentId(UUID.randomUUID().toString())
+				.build();
+
+		String result = null;
+
+		try {
+			result = commandGateway.sendAndWait(processPaymentCommand, 10, TimeUnit.SECONDS);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+
+		if (null == result) {
+			LOGGER.warn("the result of process payment command is null.");
+		}
 	}
+
+	@SagaEventHandler(associationProperty = "orderId")
+	public void handle(PaymentProcessedEvent paymentProcessedEvent) {}
 }

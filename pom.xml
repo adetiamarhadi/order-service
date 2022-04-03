@@ -18,7 +18,7 @@
 		<spring-cloud.version>2021.0.1</spring-cloud.version>
 		<axon.version>4.5.8</axon.version>
 		<guava.version>31.0.1-jre</guava.version>
-		<saga-core.version>0.0.5-SNAPSHOT</saga-core.version>
+		<saga-core.version>0.0.6-SNAPSHOT</saga-core.version>
 	</properties>
 	<dependencies>
 		<dependency>
