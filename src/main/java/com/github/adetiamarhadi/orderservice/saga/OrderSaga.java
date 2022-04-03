@@ -1,5 +1,7 @@
 package com.github.adetiamarhadi.orderservice.saga;
 
+import com.github.adetiamarhadi.orderservice.command.ApproveOrderCommand;
+import com.github.adetiamarhadi.orderservice.core.events.OrderApprovedEvent;
 import com.github.adetiamarhadi.orderservice.core.events.OrderCreatedEvent;
 import com.github.adetiamarhadi.sagacore.commands.ProcessPaymentCommand;
 import com.github.adetiamarhadi.sagacore.commands.ReserveProductCommand;
@@ -9,6 +11,7 @@ import com.github.adetiamarhadi.sagacore.model.User;
 import com.github.adetiamarhadi.sagacore.query.FetchUserPaymentDetailsQuery;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
+import org.axonframework.modelling.saga.EndSaga;
 import org.axonframework.modelling.saga.SagaEventHandler;
 import org.axonframework.modelling.saga.StartSaga;
 import org.axonframework.queryhandling.QueryGateway;
@@ -102,5 +105,17 @@ public class OrderSaga {
 	}
 
 	@SagaEventHandler(associationProperty = "orderId")
-	public void handle(PaymentProcessedEvent paymentProcessedEvent) {}
+	public void handle(PaymentProcessedEvent paymentProcessedEvent) {
+
+		ApproveOrderCommand approveOrderCommand = new ApproveOrderCommand(paymentProcessedEvent.getOrderId());
+
+		commandGateway.send(approveOrderCommand);
+	}
+
+	@EndSaga
+	@SagaEventHandler(associationProperty = "orderId")
+	public void handle(OrderApprovedEvent orderApprovedEvent) {
+
+		LOGGER.info("order is approved. order saga is complete for order id: " + orderApprovedEvent.getOrderId());
+	}
 }
