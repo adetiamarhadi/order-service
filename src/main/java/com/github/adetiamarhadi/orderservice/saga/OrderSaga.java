@@ -1,11 +1,15 @@
 package com.github.adetiamarhadi.orderservice.saga;
 
 import com.github.adetiamarhadi.orderservice.command.ApproveOrderCommand;
+import com.github.adetiamarhadi.orderservice.command.RejectOrderCommand;
 import com.github.adetiamarhadi.orderservice.core.events.OrderApprovedEvent;
 import com.github.adetiamarhadi.orderservice.core.events.OrderCreatedEvent;
+import com.github.adetiamarhadi.orderservice.core.events.OrderRejectedEvent;
+import com.github.adetiamarhadi.sagacore.commands.CancelProductReservationCommand;
 import com.github.adetiamarhadi.sagacore.commands.ProcessPaymentCommand;
 import com.github.adetiamarhadi.sagacore.commands.ReserveProductCommand;
 import com.github.adetiamarhadi.sagacore.events.PaymentProcessedEvent;
+import com.github.adetiamarhadi.sagacore.events.ProductReservationCancelledEvent;
 import com.github.adetiamarhadi.sagacore.events.ProductReservedEvent;
 import com.github.adetiamarhadi.sagacore.model.User;
 import com.github.adetiamarhadi.sagacore.query.FetchUserPaymentDetailsQuery;
@@ -75,11 +79,17 @@ public class OrderSaga {
 			user = queryGateway.query(query, ResponseTypes.instanceOf(User.class)).join();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
+
+			cancelProductReservation(productReservedEvent, e.getMessage());
+
 			return;
 		}
 
 		if (null == user) {
 			LOGGER.warn("user id not found.");
+
+			cancelProductReservation(productReservedEvent, "could not fetch user payment details");
+
 			return;
 		}
 
@@ -97,10 +107,16 @@ public class OrderSaga {
 			result = commandGateway.sendAndWait(processPaymentCommand, 10, TimeUnit.SECONDS);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
+
+			cancelProductReservation(productReservedEvent, e.getMessage());
+
+			return;
 		}
 
 		if (null == result) {
 			LOGGER.warn("the result of process payment command is null.");
+
+			cancelProductReservation(productReservedEvent, "could not process user payment with provided payment details");
 		}
 	}
 
@@ -117,5 +133,33 @@ public class OrderSaga {
 	public void handle(OrderApprovedEvent orderApprovedEvent) {
 
 		LOGGER.info("order is approved. order saga is complete for order id: " + orderApprovedEvent.getOrderId());
+	}
+
+	private void cancelProductReservation(ProductReservedEvent productReservedEvent, String reason) {
+
+		CancelProductReservationCommand cancelProductReservationCommand = CancelProductReservationCommand.builder()
+				.orderId(productReservedEvent.getOrderId())
+				.productId(productReservedEvent.getProductId())
+				.quantity(productReservedEvent.getQuantity())
+				.userId(productReservedEvent.getUserId())
+				.reason(reason)
+				.build();
+
+		commandGateway.send(cancelProductReservationCommand);
+	}
+
+	@SagaEventHandler(associationProperty = "orderId")
+	public void handle(ProductReservationCancelledEvent productReservationCancelledEvent) {
+
+		RejectOrderCommand rejectOrderCommand = new RejectOrderCommand(productReservationCancelledEvent.getOrderId(),
+				productReservationCancelledEvent.getReason());
+
+		commandGateway.send(rejectOrderCommand);
+	}
+
+	@EndSaga
+	@SagaEventHandler(associationProperty = "orderId")
+	public void handle(OrderRejectedEvent orderRejectedEvent) {
+		LOGGER.info("successfully rejected order id " + orderRejectedEvent.getOrderId());
 	}
 }

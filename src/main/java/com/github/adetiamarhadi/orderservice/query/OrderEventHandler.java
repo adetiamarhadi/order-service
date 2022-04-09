@@ -4,6 +4,7 @@ import com.github.adetiamarhadi.orderservice.core.data.OrderEntity;
 import com.github.adetiamarhadi.orderservice.core.data.OrderRepository;
 import com.github.adetiamarhadi.orderservice.core.events.OrderApprovedEvent;
 import com.github.adetiamarhadi.orderservice.core.events.OrderCreatedEvent;
+import com.github.adetiamarhadi.orderservice.core.events.OrderRejectedEvent;
 import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventhandling.EventHandler;
 import org.springframework.beans.BeanUtils;
@@ -39,6 +40,14 @@ public class OrderEventHandler {
 
 		orderEntity.setOrderStatus(orderApprovedEvent.getOrderStatus());
 
+		orderRepository.save(orderEntity);
+	}
+
+	@EventHandler
+	public void on(OrderRejectedEvent orderRejectedEvent) {
+
+		OrderEntity orderEntity = orderRepository.findByOrderId(orderRejectedEvent.getOrderId());
+		orderEntity.setOrderStatus(orderRejectedEvent.getOrderStatus());
 		orderRepository.save(orderEntity);
 	}
 }
